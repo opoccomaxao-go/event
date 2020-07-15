@@ -39,3 +39,24 @@ func TestEventEmitter(t *testing.T) {
 		t.Errorf("EE has %d Test-listeners; want 0", l)
 	}
 }
+
+func makeTestOnceListener(t *testing.T) Listener {
+	counter := 0
+	return func(...interface{}) {
+		t.Helper()
+		counter++
+		if counter > 1 {
+			t.Errorf("Second call of once listener")
+		}
+	}
+}
+
+func TestEmitter_Once(t *testing.T) {
+	ee := NewEmitter()
+	ee.Once("test", makeTestOnceListener(t))
+	ee.Once("test", makeTestOnceListener(t))
+	ee.Emit("test")
+	ee.Once("test", makeTestOnceListener(t))
+	ee.Emit("test")
+	ee.Emit("test")
+}
