@@ -4,6 +4,7 @@ import (
 	"sync"
 )
 
+// TODO add comments
 type Emitter struct {
 	listeners map[string]listenerList
 	mu        sync.Mutex

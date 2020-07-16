@@ -1,7 +1,7 @@
 package event
 
 import (
-	"fmt"
+	. "github.com/opoccomaxao-go/helpers/test"
 	"testing"
 	"time"
 )
@@ -20,24 +20,22 @@ func TestEventEmitter(t *testing.T) {
 		C: time.Now(),
 	}
 	var listener Listener = func(i ...interface{}) {
-		fmt.Println("Test", i)
-		if &testObj != i[0].(*testStruct) {
-			t.Errorf("Event has %v argument; want %v", i, testObj)
-		}
+		CheckValue(t, "event argument", testObj, i)
 	}
+
+	ee.AddEventListener("Test", listener)
 	ee.On("Test", listener)
-	if l := len(ee.listeners["Test"]); l != 1 {
-		t.Errorf("EE has %d Test-listeners; want 1", l)
-	}
-	go ee.Emit("Test", &testObj)
+	CheckValue(t, "ee.listeners[\"Test\"] length", 2, len(ee.listeners["Test"]))
+
+	ee.Emit("Test", &testObj)
+
+	ee.RemoveEventListener("Test", listener)
+	CheckValue(t, "ee.listeners[\"Test\"] length", 1, len(ee.listeners["Test"]))
+
 	ee.Off("Test", listener)
-	if l := len(ee.listeners["Test"]); l != 0 {
-		t.Errorf("EE has %d Test-listeners; want 0", l)
-	}
-	ee.Off("Test", listener)
-	if l := len(ee.listeners["Test"]); l != 0 {
-		t.Errorf("EE has %d Test-listeners; want 0", l)
-	}
+	CheckValue(t, "ee.listeners[\"Test\"] length", 0, len(ee.listeners["Test"]))
+
+	ee.Emit("Test", &testObj)
 }
 
 func makeTestOnceListener(t *testing.T) Listener {
@@ -59,4 +57,11 @@ func TestEmitter_Once(t *testing.T) {
 	ee.Once("test", makeTestOnceListener(t))
 	ee.Emit("test")
 	ee.Emit("test")
+}
+
+func TestEmitter_implementTarget(t *testing.T) {
+	var target Target = NewEmitter()
+	if target == nil {
+		t.Errorf("Emitter doesn't implement Target interface")
+	}
 }
