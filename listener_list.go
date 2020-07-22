@@ -2,10 +2,9 @@ package event
 
 type listenerList []listenerWrapper
 
-func (ll listenerList) IndexOf(element Listener) int {
-	p := element.ptr()
+func (ll listenerList) IndexOf(id ListenerId) int {
 	for i := range ll {
-		if ll[i].ptr() == p {
+		if ll[i].Id == id {
 			return i
 		}
 	}
@@ -25,6 +24,6 @@ func (ll listenerList) RemoveByIndex(index int) listenerList {
 	return ll[:last]
 }
 
-func (ll listenerList) Remove(listener Listener) listenerList {
-	return ll.RemoveByIndex(ll.IndexOf(listener))
+func (ll listenerList) Remove(id ListenerId) listenerList {
+	return ll.RemoveByIndex(ll.IndexOf(id))
 }

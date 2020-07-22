@@ -1,12 +1,6 @@
 package event
 
-import "reflect"
-
 type Listener func(...interface{})
-
-func (l Listener) ptr() uintptr {
-	return reflect.ValueOf(l).Pointer()
-}
 
 func (l Listener) Bind(boundedArgv ...interface{}) Listener {
 	return func(native ...interface{}) {
