@@ -27,3 +27,7 @@ func (ll listenerList) RemoveByIndex(index int) listenerList {
 func (ll listenerList) Remove(id ListenerId) listenerList {
 	return ll.RemoveByIndex(ll.IndexOf(id))
 }
+
+func (ll listenerList) Clone() listenerList {
+	return append(ll[:0:0], ll...)
+}
