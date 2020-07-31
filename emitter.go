@@ -24,11 +24,12 @@ func (e *Emitter) getId() ListenerId {
 
 func (e *Emitter) emit(name string, arguments []interface{}) {
 	e.mu.Lock()
+	var listenersToProcess []Listener
 	if listeners, ok := e.listeners[name]; ok {
 		end := len(listeners) - 1
 		for i := 0; i <= end; {
 			l := listeners[i]
-			go l.Listener(arguments...)
+			listenersToProcess = append(listenersToProcess, l.Listener)
 			if l.Once {
 				listeners = listeners.RemoveByIndex(i)
 				end--
@@ -38,7 +39,11 @@ func (e *Emitter) emit(name string, arguments []interface{}) {
 		}
 		e.listeners[name] = listeners
 	}
+	// another event can be processed now
 	e.mu.Unlock()
+	for _, l := range listenersToProcess {
+		go l(arguments...)
+	}
 }
 
 func (e *Emitter) on(name string, listener listenerWrapper) (res ListenerId) {
