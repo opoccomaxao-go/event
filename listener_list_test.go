@@ -2,7 +2,7 @@ package event
 
 import (
 	"fmt"
-	. "github.com/opoccomaxao-go/helpers/test"
+	. "gitlab.com/opoccomaxao-go/helpers/test"
 	"testing"
 )
 

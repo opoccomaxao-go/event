@@ -1,7 +1,7 @@
 package event
 
 import (
-	. "github.com/opoccomaxao-go/helpers/test"
+	. "gitlab.com/opoccomaxao-go/helpers/test"
 	"testing"
 )
 
