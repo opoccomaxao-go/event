@@ -41,9 +41,9 @@ func (e *Emitter) emit(name string, arguments []interface{}) {
 	}
 	// another event can be processed now
 	e.mu.Unlock()
-	// single thread used
+	// multiple threads used
 	for _, l := range listenersToProcess {
-		l(arguments...)
+		go l(arguments...)
 	}
 }
 
