@@ -1,10 +1,11 @@
 package event
 
 import (
-	. "gitlab.com/opoccomaxao-go/helpers/test"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type testStruct struct {
@@ -30,9 +31,7 @@ func (m *testListener) Listener(...interface{}) {
 	m.t.Helper()
 	m.mu.Lock()
 	m.counter++
-	if m.counter != m.expected {
-		CheckValue(m.t, "Call count", m.expected, m.counter)
-	}
+	assert.Equal(m.t, m.expected, m.counter, "Call count")
 	m.mu.Unlock()
 }
 
@@ -44,26 +43,28 @@ func (m *testListener) Inc() {
 
 func TestEventEmitter(t *testing.T) {
 	ee := NewEmitter()
+
 	testObj := testStruct{
 		A: 10,
 		B: "str",
 		C: time.Now(),
 	}
+
 	var listener Listener = func(i ...interface{}) {
-		CheckValue(t, "event argument", &testObj, i[0])
+		assert.Equal(t, &testObj, i[0], "event argument")
 	}
 
 	i1 := ee.AddEventListener("Test", listener)
 	i2 := ee.On("Test", listener)
-	CheckValue(t, "ee.listeners[\"Test\"] length", 2, len(ee.listeners["Test"]))
+	assert.Equal(t, 2, len(ee.listeners["Test"]), `ee.listeners["Test"] length`)
 
 	ee.Emit("Test", &testObj)
 
 	ee.RemoveEventListener("Test", i1)
-	CheckValue(t, "ee.listeners[\"Test\"] length", 1, len(ee.listeners["Test"]))
+	assert.Equal(t, 1, len(ee.listeners["Test"]), `ee.listeners["Test"] length`)
 
 	ee.Off("Test", i2)
-	CheckValue(t, "ee.listeners[\"Test\"] length", 0, len(ee.listeners["Test"]))
+	assert.Equal(t, 0, len(ee.listeners["Test"]), `ee.listeners["Test"] length`)
 
 	ee.Emit("Test", &testObj)
 	time.Sleep(time.Millisecond * 100)
@@ -81,17 +82,17 @@ func TestEmitter_Once(t *testing.T) {
 
 	ee.Once("test", o1.Listener)
 	ee.Once("test", o2.Listener)
-	CheckValue(t, "ee.listeners[\"test\"] length", 2, len(ee.listeners["test"]))
+	assert.Equal(t, 2, len(ee.listeners["test"]), `ee.listeners["test"] length`)
 	ee.Emit("test")
-	CheckValue(t, "ee.listeners[\"test\"] length", 0, len(ee.listeners["test"]))
+	assert.Equal(t, 0, len(ee.listeners["test"]), `ee.listeners["test"] length`)
 
 	ee.Once("test", o3.Listener)
-	CheckValue(t, "ee.listeners[\"test\"] length", 1, len(ee.listeners["test"]))
+	assert.Equal(t, 1, len(ee.listeners["test"]), `ee.listeners["test"] length`)
 	ee.Emit("test")
-	CheckValue(t, "ee.listeners[\"test\"] length", 0, len(ee.listeners["test"]))
+	assert.Equal(t, 0, len(ee.listeners["test"]), `ee.listeners["test"] length`)
 
 	ee.Emit("test")
-	CheckValue(t, "ee.listeners[\"test\"] length", 0, len(ee.listeners["test"]))
+	assert.Equal(t, 0, len(ee.listeners["test"]), `ee.listeners["test"] length`)
 	time.Sleep(time.Millisecond * 100)
 }
 
@@ -113,34 +114,34 @@ func TestEmitter_Mixed(t *testing.T) {
 	ee.Once("test", o2.Listener)
 	ee.On("test", l1.Listener)
 	l1.Inc()
-	CheckValue(t, "ee.listeners[\"test\"] length", 3, len(ee.listeners["test"]))
+	assert.Equal(t, 3, len(ee.listeners["test"]), `ee.listeners["test"] length`)
 	ee.Emit("test")
-	CheckValue(t, "ee.listeners[\"test\"] length", 1, len(ee.listeners["test"]))
+	assert.Equal(t, 1, len(ee.listeners["test"]), `ee.listeners["test"] length`)
 	time.Sleep(time.Millisecond * 100)
 
 	ee.Once("test", o3.Listener)
 	i2 := ee.On("test", l2.Listener)
 	l1.Inc()
 	l2.Inc()
-	CheckValue(t, "ee.listeners[\"test\"] length", 3, len(ee.listeners["test"]))
+	assert.Equal(t, 3, len(ee.listeners["test"]), `ee.listeners["test"] length`)
 	ee.Emit("test")
-	CheckValue(t, "ee.listeners[\"test\"] length", 2, len(ee.listeners["test"]))
+	assert.Equal(t, 2, len(ee.listeners["test"]), `ee.listeners["test"] length`)
 	time.Sleep(time.Millisecond * 100)
 
 	ee.On("test", l3.Listener)
-	CheckValue(t, "ee.listeners[\"test\"] length", 3, len(ee.listeners["test"]))
+	assert.Equal(t, 3, len(ee.listeners["test"]), `ee.listeners["test"] length`)
 	ee.Off("test", i2)
-	CheckValue(t, "ee.listeners[\"test\"] length", 2, len(ee.listeners["test"]))
+	assert.Equal(t, 2, len(ee.listeners["test"]), `ee.listeners["test"] length`)
 	l1.Inc()
 	l3.Inc()
 	ee.Emit("test")
-	CheckValue(t, "ee.listeners[\"test\"] length", 2, len(ee.listeners["test"]))
+	assert.Equal(t, 2, len(ee.listeners["test"]), `ee.listeners["test"] length`)
 	time.Sleep(time.Millisecond * 100)
 
 	l1.Inc()
 	l3.Inc()
 	ee.Emit("test")
-	CheckValue(t, "ee.listeners[\"test\"] length", 2, len(ee.listeners["test"]))
+	assert.Equal(t, 2, len(ee.listeners["test"]), `ee.listeners["test"] length`)
 	time.Sleep(time.Millisecond * 100)
 }
 

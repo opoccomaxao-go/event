@@ -2,8 +2,9 @@ package event
 
 import (
 	"fmt"
-	. "gitlab.com/opoccomaxao-go/helpers/test"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestListenerList(t *testing.T) {
@@ -24,23 +25,31 @@ func TestListenerList(t *testing.T) {
 	}
 	list := listenerList{e1, e2}
 
-	CheckValue(t, "Index", 1, list.IndexOf(2))
-	CheckValue(t, "Index", -1, list.IndexOf(3))
+	assert.Equal(t, 1, list.IndexOf(2), "Index")
+	assert.Equal(t, -1, list.IndexOf(3), "Index")
 
-	CheckValue(t, "List",
+	assert.Equal(
+		t,
 		fmt.Sprintf("%v", listenerList{e3, e2}),
 		fmt.Sprintf("%v", listenerList{e1, e2, e3}.RemoveByIndex(0)),
+		"List",
 	)
-	CheckValue(t, "List",
+	assert.Equal(
+		t,
 		fmt.Sprintf("%v", listenerList{e1, e3}),
 		fmt.Sprintf("%v", listenerList{e1, e2, e3}.RemoveByIndex(1)),
+		"List",
 	)
-	CheckValue(t, "List",
+	assert.Equal(
+		t,
 		fmt.Sprintf("%v", listenerList{e1, e2, e3}),
 		fmt.Sprintf("%v", listenerList{e1, e2, e3}.RemoveByIndex(-1)),
+		"List",
 	)
-	CheckValue(t, "List",
+	assert.Equal(
+		t,
 		fmt.Sprintf("%v", listenerList{e1, e2, e3}),
 		fmt.Sprintf("%v", listenerList{e1, e2, e3}.RemoveByIndex(3)),
+		"List",
 	)
 }

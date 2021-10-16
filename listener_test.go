@@ -1,8 +1,9 @@
 package event
 
 import (
-	. "gitlab.com/opoccomaxao-go/helpers/test"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestListener_Bind(t *testing.T) {
@@ -13,8 +14,8 @@ func TestListener_Bind(t *testing.T) {
 	bounded := original.Bind(1, 2, 3)
 
 	original(1, 2, 3)
-	CheckValue(t, "Original array", []interface{}{1, 2, 3}, res)
+	assert.Equal(t, []interface{}{1, 2, 3}, res, "Original array")
 
 	bounded(2, 3)
-	CheckValue(t, "Bounded array", []interface{}{1, 2, 3, 2, 3}, res)
+	assert.Equal(t, []interface{}{1, 2, 3, 2, 3}, res, "Bounded array")
 }
