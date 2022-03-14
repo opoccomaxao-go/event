@@ -1,4 +1,4 @@
-module github.com/opoccomaxao-go/event
+module github.com/opoccomaxao-go/event/v2
 
 go 1.17
 
