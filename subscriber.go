@@ -2,6 +2,14 @@ package event
 
 import "io"
 
+// Subscriber is controller for subscription. Commonly used for subscription cancelling.
+//
+// Usage:
+//  sub := event.Subscribe(fn)
+// or with mods
+//  sub := event.Subscribe(fn).Async().Once()
+// cancel:
+//  sub.Close()
 type Subscriber interface {
 	io.Closer
 	// Async modifier. These callbacks are called in goroutine.

@@ -4,6 +4,16 @@ import (
 	"sync"
 )
 
+// Event is container for all subscribers and bus for pub/sub.
+//
+// Usage:
+//  event := NewEvent()
+// or
+//  event := pool.Event("evt1")
+// publish
+//  event.Publish(data)
+// subscribe
+//  event.Subscribe(func(interface{}){ ... })
 type Event interface {
 	// Subscribe to event. listener is a callback that is called when Publish is called.
 	Subscribe(listener func(interface{})) Subscriber
@@ -54,6 +64,7 @@ func (e *event) Publish(arg interface{}) {
 	}
 }
 
+// NewEvent constructor for Event.
 func NewEvent() Event {
 	return &event{}
 }

@@ -2,11 +2,17 @@ package event
 
 import "sync"
 
+// Pool is container for multiple events.
+//
+// Usage:
+//  pool := NewPool(cfg)
+//  event := pool.Event("evt1")
 type Pool interface {
-	// Event - get named event. Events with same names are equal.
+	// Event - get or create named event. Events with same names are equal.
 	Event(name string) Event
 }
 
+// PoolConfig is config for Pool with all optional parameters.
 type PoolConfig struct {
 	// EventConstructor is optional. Default value: NewEvent
 	EventConstructor func() Event
@@ -32,6 +38,7 @@ func (p *pool) Event(name string) Event {
 	return event
 }
 
+// NewPool constructor for Pool.
 func NewPool(config PoolConfig) Pool {
 	if config.EventConstructor == nil {
 		config.EventConstructor = NewEvent
