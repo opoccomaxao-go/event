@@ -18,20 +18,20 @@ type Subscriber interface {
 	Once() Subscriber
 }
 
-type subscriber struct {
-	Listener func(interface{})
+type subscriber[T any] struct {
+	Listener func(T)
 	Closed   bool
 	async    bool
 	once     bool
 }
 
-func (s *subscriber) Close() error {
+func (s *subscriber[T]) Close() error {
 	s.Closed = true
 
 	return nil
 }
 
-func (s *subscriber) Exec(data interface{}) {
+func (s *subscriber[T]) Exec(data T) {
 	if s.async {
 		go s.Listener(data)
 	} else {
@@ -43,13 +43,13 @@ func (s *subscriber) Exec(data interface{}) {
 	}
 }
 
-func (s *subscriber) Async() Subscriber {
+func (s *subscriber[T]) Async() Subscriber {
 	s.async = true
 
 	return s
 }
 
-func (s *subscriber) Once() Subscriber {
+func (s *subscriber[T]) Once() Subscriber {
 	s.once = true
 
 	return s

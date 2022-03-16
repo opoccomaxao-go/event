@@ -14,27 +14,27 @@ import (
 //  event.Publish(data)
 // subscribe
 //  event.Subscribe(func(interface{}){ ... })
-type Event interface {
+type Event[T any] interface {
 	// Subscribe to event. listener is a callback that is called when Publish is called.
-	Subscribe(listener func(interface{})) Subscriber
+	Subscribe(listener func(T)) Subscriber
 	// Publish call all callbacks for this event with specified argument.
-	Publish(arg interface{})
+	Publish(arg T)
 }
 
-type event struct {
-	Subscribers []*subscriber
+type event[T any] struct {
+	Subscribers []*subscriber[T]
 	mu          sync.Mutex
 }
 
-func (e *event) Subscribe(listener func(interface{})) Subscriber {
+func (e *event[T]) Subscribe(listener func(T)) Subscriber {
 	if listener == nil {
-		return &subscriber{
-			Listener: func(interface{}) {},
+		return &subscriber[T]{
+			Listener: func(T) {},
 			Closed:   true,
 		}
 	}
 
-	sub := &subscriber{
+	sub := &subscriber[T]{
 		Listener: listener,
 	}
 
@@ -45,7 +45,7 @@ func (e *event) Subscribe(listener func(interface{})) Subscriber {
 	return sub
 }
 
-func (e *event) Publish(arg interface{}) {
+func (e *event[T]) Publish(arg T) {
 	e.mu.Lock()
 	subs := e.Subscribers
 	e.Subscribers = e.Subscribers[0:0]
@@ -65,6 +65,6 @@ func (e *event) Publish(arg interface{}) {
 }
 
 // NewEvent constructor for Event.
-func NewEvent() Event {
-	return &event{}
+func NewEvent[T any]() Event[T] {
+	return &event[T]{}
 }
