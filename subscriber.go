@@ -54,3 +54,8 @@ func (s *subscriber[T]) Once() Subscriber {
 
 	return s
 }
+
+// NilSubscriber constructs empty valid Subscriber to pass as argument or default not initialized value.
+func NilSubscriber() Subscriber {
+	return &subscriber[struct{}]{}
+}

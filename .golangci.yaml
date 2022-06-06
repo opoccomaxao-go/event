@@ -19,6 +19,7 @@ linters-settings:
     ignore-names:
       - ok
       - err
+      - id
 
 linters:
   enable-all: true
@@ -27,6 +28,7 @@ linters:
     - ifshort
     - exhaustivestruct
     - testpackage
+    - exhaustruct
   fast: false
 
 issues:

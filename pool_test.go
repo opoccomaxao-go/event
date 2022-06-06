@@ -17,7 +17,10 @@ func TestPool(t *testing.T) {
 	assert.True(t, event1 == event2)
 }
 
+//nolint:varnamelen // test var names
 func TestWithType(t *testing.T) {
+	t.Parallel()
+
 	p1 := NewPool(PoolConfig{})
 	p2 := WithType[int](p1)
 	p3 := WithType[any](p2)

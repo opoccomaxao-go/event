@@ -29,7 +29,10 @@ func (p *pool[T]) Event(name string) Event[T] {
 
 	event, ok := p.storage.data[id]
 	if ok {
-		return event.(Event[T])
+		res, ok := event.(Event[T])
+		if ok {
+			return res
+		}
 	}
 
 	res2 := NewEvent[T]()
