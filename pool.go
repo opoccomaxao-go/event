@@ -3,8 +3,9 @@ package event
 // Pool is container for multiple untyped events.
 //
 // Usage:
-//  pool := NewPool(cfg)
-//  event := pool.Event("evt1")
+//
+//	pool := NewPool(cfg)
+//	event := pool.Event("evt1")
 type Pool[T any] interface {
 	WithStorage
 

@@ -1,13 +1,21 @@
 package event
 
+import (
+	"fmt"
+	"reflect"
+	"time"
+)
+
 func Example() {
 	// create common pool. empty config - use defaults
 	pool := NewPool(PoolConfig{})
 
 	// subscribe for event
 	sub := pool.
-		Event("event1").                // get named event
-		Subscribe(func(interface{}) {}) // callback on event was published
+		Event("event1").        // get named event
+		Subscribe(func(a any) { // callback on event was published
+			fmt.Println(a)
+		})
 
 	// publish event
 	pool.
@@ -20,12 +28,12 @@ func Example() {
 
 	// event equality
 	eventCopy := pool.Event("event1")
-	if event == eventCopy {
-		// events with same names are single object and always equal
-	}
+	// events with same names are single object and always equal
+	fmt.Println("same event: ", event == eventCopy)
 
 	// unsubscribe
 	sub.Close()
+	event.Publish(nil) // no print.
 
 	// modifiers
 	pool.
@@ -43,23 +51,36 @@ func Example() {
 	sub2.Once()
 	sub2.Async().Once()
 	sub2.Once().Async()
+
+	// Output: <nil>
+	// <nil>
+	// same event:  true
 }
 
 func ExampleEvent() {
-	event := NewEvent[interface{}]()
+	event := NewEvent[int]()
 
 	// subscribe for event
 	sub := event.
-		Subscribe(func(interface{}) {}).
+		Subscribe(func(a int) {
+			fmt.Println(a)
+		}).
 		Async().
 		Once()
 
 	// publish event
 	event.
-		Publish(nil)
+		Publish(1)
+
+	time.Sleep(time.Millisecond) // wait for async.
 
 	// unsubscribe
 	sub.Close()
+
+	// no print.
+	event.Publish(1)
+
+	// Output: 1
 }
 
 func ExampleWithType() {
@@ -69,7 +90,9 @@ func ExampleWithType() {
 	// bound typed event to common pool.
 	WithType[int](pool).
 		Event("test").
-		Subscribe(func(i int) {}) // func (pool) Subscribe(func(int)) Subscriber
+		Subscribe(func(i int) { // func (pool) Subscribe(func(int)) Subscriber
+			fmt.Println(i)
+		})
 
 	WithType[int](pool).
 		Event("test").
@@ -80,13 +103,11 @@ func ExampleWithType() {
 	eventInt := WithType[int](pool).Event("test")
 	eventIntCopy := WithType[int](pool).Event("test")
 
-	if eventInt == eventIntCopy {
-		// events with same types are equal
-	}
+	// events with same types are equal
+	fmt.Println("same event: ", eventInt == eventIntCopy)
 
-	if interface{}(eventCommon) != eventInt {
-		// event with different types are not equal and publish of eventCommon will not trigger eventInt
-	}
+	// event with different types are not equal and publish of eventCommon will not trigger eventInt
+	fmt.Println("not same event: ", !reflect.DeepEqual(eventCommon, eventInt))
 
 	// Typed pool.
 	// create typed pool.
@@ -98,4 +119,8 @@ func ExampleWithType() {
 	// unused.
 	_ = typedPool
 	_ = typedPool2
+
+	// Output: 0
+	// same event:  true
+	// not same event:  true
 }

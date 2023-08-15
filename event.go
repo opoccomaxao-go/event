@@ -7,13 +7,20 @@ import (
 // Event is container for all subscribers and bus for pub/sub.
 //
 // Usage:
-//  event := NewEvent()
+//
+//	event := NewEvent()
+//
 // or
-//  event := pool.Event("evt1")
+//
+//	event := pool.Event("evt1")
+//
 // publish
-//  event.Publish(data)
+//
+//	event.Publish(data)
+//
 // subscribe
-//  event.Subscribe(func(interface{}){ ... })
+//
+//	event.Subscribe(func(interface{}){ ... })
 type Event[T any] interface {
 	// Subscribe to event. listener is a callback that is called when Publish is called.
 	Subscribe(listener func(T)) Subscriber

@@ -29,6 +29,8 @@ linters:
     - exhaustivestruct
     - testpackage
     - exhaustruct
+    - structcheck # deprecated
+    - depguard # deprecated
   fast: false
 
 issues:
